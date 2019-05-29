@@ -1,0 +1,1 @@
+stm32_f750_test\startup_stm32f750xx.o: startup_stm32f750xx.s
