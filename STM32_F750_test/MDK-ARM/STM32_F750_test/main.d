@@ -29,3 +29,5 @@ stm32_f750_test\main.o: ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_i2c.h
 stm32_f750_test\main.o: ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_i2c_ex.h
 stm32_f750_test\main.o: ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_pwr.h
 stm32_f750_test\main.o: ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_pwr_ex.h
+stm32_f750_test\main.o: ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_usart.h
+stm32_f750_test\main.o: ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_usart_ex.h

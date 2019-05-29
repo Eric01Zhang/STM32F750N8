@@ -6,6 +6,7 @@
 "stm32_f750_test\stm32f7xx_hal_cortex.o"
 "stm32_f750_test\stm32f7xx_hal_tim.o"
 "stm32_f750_test\stm32f7xx_hal_tim_ex.o"
+"stm32_f750_test\stm32f7xx_hal_usart.o"
 "stm32_f750_test\stm32f7xx_hal_rcc.o"
 "stm32_f750_test\stm32f7xx_hal_rcc_ex.o"
 "stm32_f750_test\stm32f7xx_hal_flash.o"

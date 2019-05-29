@@ -43,6 +43,9 @@
 
 /* Private variables ---------------------------------------------------------*/
 
+USART_HandleTypeDef husart6;
+DMA_HandleTypeDef hdma_usart6_tx;
+
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -50,6 +53,8 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
+static void MX_USART6_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -57,6 +62,9 @@ static void MX_GPIO_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 uint8_t  uc_test = 0;
+
+uint8_t uart_dma_tx_source[10] = {0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x20};
+uint8_t       uart_dma_rx_des[10] = {0};
 /* USER CODE END 0 */
 
 /**
@@ -94,8 +102,10 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
+  MX_USART6_Init();
   /* USER CODE BEGIN 2 */
-
+  
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -103,21 +113,23 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
     if(uc_test == 1)
     {
-      HAL_GPIO_TogglePin(LED1_GPIO_Port,LED1_Pin);
-    }
+      HAL_GPIO_TogglePin(LED1_GPIO_Port,LED1_Pin);  
+      HAL_USART_Transmit_DMA(&husart6,uart_dma_tx_source,10);
+   }
     else if(uc_test == 2)
     {
       HAL_GPIO_WritePin(LED1_GPIO_Port,LED1_Pin,GPIO_PIN_SET);
+      
     }
     else 
     {
        HAL_GPIO_WritePin(LED1_GPIO_Port,LED1_Pin,GPIO_PIN_RESET);
     }
 		HAL_Delay(200);
-
   }
   /* USER CODE END 3 */
 }
@@ -130,6 +142,7 @@ void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
 
   /** Configure the main internal regulator output voltage 
   */
@@ -169,6 +182,61 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USART6;
+  PeriphClkInitStruct.Usart6ClockSelection = RCC_USART6CLKSOURCE_PCLK2;
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+
+/**
+  * @brief USART6 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART6_Init(void)
+{
+
+  /* USER CODE BEGIN USART6_Init 0 */
+
+  /* USER CODE END USART6_Init 0 */
+
+  /* USER CODE BEGIN USART6_Init 1 */
+
+  /* USER CODE END USART6_Init 1 */
+  husart6.Instance = USART6;
+  husart6.Init.BaudRate = 115200;
+  husart6.Init.WordLength = USART_WORDLENGTH_8B;
+  husart6.Init.StopBits = USART_STOPBITS_1;
+  husart6.Init.Parity = USART_PARITY_NONE;
+  husart6.Init.Mode = USART_MODE_TX_RX;
+  husart6.Init.CLKPolarity = USART_POLARITY_LOW;
+  husart6.Init.CLKPhase = USART_PHASE_1EDGE;
+  husart6.Init.CLKLastBit = USART_LASTBIT_DISABLE;
+  if (HAL_USART_Init(&husart6) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART6_Init 2 */
+
+  /* USER CODE END USART6_Init 2 */
+
+}
+
+/** 
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void) 
+{
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA2_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA2_Stream6_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Stream6_IRQn, 0, 4);
+  HAL_NVIC_EnableIRQ(DMA2_Stream6_IRQn);
+
 }
 
 /**
@@ -183,6 +251,7 @@ static void MX_GPIO_Init(void)
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOI_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
